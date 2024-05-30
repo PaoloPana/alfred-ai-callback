@@ -1,0 +1,10 @@
+[package]
+name = "alfred-ai-callback"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = "1.37.0"
+alfred-rs = { path = "../alfred-rs" }
+log = "0.4.21"
+env_logger = "0.11.3"
