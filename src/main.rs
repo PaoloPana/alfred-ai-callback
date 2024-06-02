@@ -3,11 +3,12 @@ use alfred_rs::error::Error;
 use alfred_rs::connection::{Publisher, Subscriber};
 use alfred_rs::message::{Message, MessageType};
 use alfred_rs::module::Module;
-use log::warn;
+use alfred_rs::log::warn;
+use alfred_rs::tokio;
 
 const MODULE_NAME: &'static str = "ai_callback";
 const INPUT_TOPIC: &'static str = "ai_callback";
-const STT_REQUEST_TOPIC: &'static str = "stt";
+const STT_REQUEST_TOPIC: &'static str = "audio_out";
 const TTS_REQUEST_TOPIC: &'static str = "tts";
 const AI_TOPIC: &'static str = "openai";
 
