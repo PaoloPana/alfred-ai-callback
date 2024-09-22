@@ -4,7 +4,6 @@ use alfred_rs::connection::{Receiver, Sender};
 use alfred_rs::error::Error;
 use alfred_rs::message::{Message, MessageType};
 use alfred_rs::log::warn;
-use alfred_rs::pubsub_connection::REQUEST_TOPIC;
 use alfred_rs::tokio;
 
 const MODULE_NAME: &'static str = "ai_callback";
@@ -19,7 +18,7 @@ async fn on_input(message: &mut Message, module: &mut CallbackModule) -> Result<
             // TODO: manage errors
             let mut ai_message = message.clone();
             ai_message.request_topic = "openai".to_string();
-            module.send(REQUEST_TOPIC.to_string(), &ai_message).await.expect("Error on publish");
+            //module.send(REQUEST_TOPIC.to_string(), &ai_message).await.expect("Error on publish");
         }
         MessageType::AUDIO => {
             let topic = message.response_topics.front().cloned().unwrap();
