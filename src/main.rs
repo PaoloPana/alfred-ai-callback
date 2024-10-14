@@ -30,7 +30,7 @@ async fn on_input(message: &mut Message, module: &mut CallbackModule) -> Result<
                     topic
                     //"audio_out".to_string()
                 ]);
-            module.send(STT_REQUEST_TOPIC.to_string(), message).await.expect("Error on publish");
+            module.send(STT_REQUEST_TOPIC, message).await.expect("Error on publish");
         }
         _ => {
             warn!("Unable to analyse {:?} message type", message.message_type);
@@ -42,8 +42,8 @@ async fn on_input(message: &mut Message, module: &mut CallbackModule) -> Result<
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     env_logger::init();
-    let mut module = CallbackModule::new(MODULE_NAME.to_string()).await?;
-    module.listen(INPUT_TOPIC.to_string()).await.expect("Error on subscribe");
+    let mut module = CallbackModule::new(MODULE_NAME).await?;
+    module.listen(INPUT_TOPIC).await.expect("Error on subscribe");
     loop {
         let (topic, mut message) = module.receive().await.expect("Error on getting new messages");
         match topic.as_str() {
