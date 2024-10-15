@@ -1,41 +1,30 @@
-use std::collections::LinkedList;
 use alfred_rs::callback_module::CallbackModule;
 use alfred_rs::connection::{Receiver, Sender};
 use alfred_rs::error::Error;
-use alfred_rs::message::{Message, MessageType};
+use alfred_rs::message::Message;
 use alfred_rs::log::warn;
 use alfred_rs::tokio;
 
 const MODULE_NAME: &'static str = "ai_callback";
 const INPUT_TOPIC: &'static str = "ai_callback";
-const STT_REQUEST_TOPIC: &'static str = "stt";
-const TTS_REQUEST_TOPIC: &'static str = "tts";
-const AI_TOPIC: &'static str = "openai";
 
 async fn on_input(message: &mut Message, module: &mut CallbackModule) -> Result<(), Error> {
-    match message.message_type {
-        MessageType::TEXT => {
-            // TODO: manage errors
-            let mut ai_message = message.clone();
-            ai_message.request_topic = "openai".to_string();
-            //module.send(REQUEST_TOPIC.to_string(), &ai_message).await.expect("Error on publish");
-        }
-        MessageType::AUDIO => {
-            let topic = message.response_topics.front().cloned().unwrap();
-            message.response_topics = LinkedList::from(
-                [
-                    // TODO: setup in config.toml file
-                    AI_TOPIC.to_string(),
-                    TTS_REQUEST_TOPIC.to_string(),
-                    topic
-                    //"audio_out".to_string()
-                ]);
-            module.send(STT_REQUEST_TOPIC, message).await.expect("Error on publish");
-        }
-        _ => {
-            warn!("Unable to analyse {:?} message type", message.message_type);
-        }
-    }
+    let msg_text = message.text.as_str();
+    let (relay_topic, relay_msg) = if msg_text.starts_with("`") && msg_text.ends_with("`") && msg_text.contains(": ") {
+        let msg_text = msg_text.to_string();
+        let split = msg_text.split(": ").collect::<Vec<&str>>();
+        let relay_topic = &split[0][1..];
+        let relay_msg_text = &split[1][..split[1].len() - 1];
+        let relay_msg = Message {
+            text: relay_msg_text.to_string(),
+            message_type: message.message_type.clone(),
+            ..message.clone()
+        };
+        (relay_topic.to_string(), relay_msg)
+    } else {
+        message.reply(message.text.clone(), message.message_type)?
+    };
+    module.send(relay_topic.as_str(), &relay_msg).await?;
     Ok(())
 }
 
