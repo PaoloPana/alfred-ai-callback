@@ -5,12 +5,12 @@ use alfred_rs::message::Message;
 use alfred_rs::log::warn;
 use alfred_rs::tokio;
 
-const MODULE_NAME: &'static str = "ai_callback";
-const INPUT_TOPIC: &'static str = "ai_callback";
+const MODULE_NAME: &str = "ai_callback";
+const INPUT_TOPIC: &str = "ai_callback";
 
-async fn on_input(message: &mut Message, module: &mut CallbackModule) -> Result<(), Error> {
+async fn on_input(message: &Message, module: &mut CallbackModule) -> Result<(), Error> {
     let msg_text = message.text.as_str();
-    let (relay_topic, relay_msg) = if msg_text.starts_with("`") && msg_text.ends_with("`") && msg_text.contains(": ") {
+    let (relay_topic, relay_msg) = if msg_text.starts_with('`') && msg_text.ends_with('`') && msg_text.contains(": ") {
         let msg_text = msg_text.to_string();
         let split = msg_text.split(": ").collect::<Vec<&str>>();
         let relay_topic = &split[0][1..];
@@ -22,7 +22,7 @@ async fn on_input(message: &mut Message, module: &mut CallbackModule) -> Result<
         };
         (relay_topic.to_string(), relay_msg)
     } else {
-        message.reply(message.text.clone(), message.message_type)?
+        message.reply(message.text.clone(), message.message_type.clone())?
     };
     module.send(relay_topic.as_str(), &relay_msg).await?;
     Ok(())
@@ -34,9 +34,9 @@ async fn main() -> Result<(), Error> {
     let mut module = CallbackModule::new(MODULE_NAME).await?;
     module.listen(INPUT_TOPIC).await.expect("Error on subscribe");
     loop {
-        let (topic, mut message) = module.receive().await.expect("Error on getting new messages");
+        let (topic, message) = module.receive().await.expect("Error on getting new messages");
         match topic.as_str() {
-            INPUT_TOPIC => on_input(&mut message, &mut module).await?,
+            INPUT_TOPIC => on_input(&message, &mut module).await?,
             _ => {
                 warn!("Unknown topic {topic}");
             }
