@@ -1,5 +1,4 @@
 use alfred_rs::AlfredModule;
-use alfred_rs::connection::{Receiver, Sender};
 use alfred_rs::error::Error;
 use alfred_rs::message::Message;
 use alfred_rs::log::warn;
@@ -8,7 +7,7 @@ use alfred_rs::tokio;
 const MODULE_NAME: &str = "ai_callback";
 const INPUT_TOPIC: &str = "ai_callback";
 
-async fn on_input(message: &Message, module: &mut AlfredModule) -> Result<(), Error> {
+async fn on_input(message: &Message, module: &AlfredModule) -> Result<(), Error> {
     let msg_text = message.text.as_str();
     let (relay_topic, relay_msg) = if msg_text.starts_with('`') && msg_text.ends_with('`') && msg_text.contains(": ") {
         let msg_text = msg_text.to_string();
@@ -36,7 +35,7 @@ async fn main() -> Result<(), Error> {
     loop {
         let (topic, message) = module.receive().await.expect("Error on getting new messages");
         match topic.as_str() {
-            INPUT_TOPIC => on_input(&message, &mut module).await?,
+            INPUT_TOPIC => on_input(&message, &module).await?,
             _ => {
                 warn!("Unknown topic {topic}");
             }
