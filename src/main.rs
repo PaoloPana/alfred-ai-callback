@@ -58,7 +58,7 @@ async fn on_input(message: &Message, module: &AlfredModule) -> Result<(), Box<dy
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
-    let mut module = AlfredModule::new(MODULE_NAME).await?;
+    let mut module = AlfredModule::new(MODULE_NAME, env!("CARGO_PKG_VERSION")).await?;
     module.listen(INPUT_TOPIC).await.expect("Error on subscribe");
     loop {
         let (topic, message) = module.receive().await.expect("Error on getting new messages");
