@@ -1,8 +1,8 @@
 use std::error::Error;
-use alfred_rs::AlfredModule;
-use alfred_rs::message::Message;
-use alfred_rs::log::warn;
-use alfred_rs::tokio;
+use alfred_core::AlfredModule;
+use alfred_core::message::Message;
+use alfred_core::log::warn;
+use alfred_core::tokio;
 use serde::Deserialize;
 
 const MODULE_NAME: &str = "ai_callback";
