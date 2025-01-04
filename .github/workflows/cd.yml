@@ -45,11 +45,11 @@ jobs:
       - name: Install deps
         run: cargo install cross --git https://github.com/cross-rs/cross
       - name: Build
-        run: bash .github/workflows/scripts/build_release.sh x86_64 ${{github.repository.name}}
+        run: bash .github/workflows/scripts/build_release.sh x86_64 ${{github.event.repository.name}}
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{github.repository.name}}_x86_64.tar.gz
-          path: ${{github.repository.name}}_x86_64.tar.gz
+          name: ${{github.event.repository.name}}_x86_64.tar.gz
+          path: ${{github.event.repository.name}}_x86_64.tar.gz
   
   build-aarch64:
     runs-on: ubuntu-24.04
@@ -60,11 +60,11 @@ jobs:
       - name: Install deps
         run: cargo install cross --git https://github.com/cross-rs/cross
       - name: Build
-        run: bash .github/workflows/scripts/build_release.sh aarch64 ${{github.repository.name}}
+        run: bash .github/workflows/scripts/build_release.sh aarch64 ${{github.event.repository.name}}
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{github.repository.name}}_aarch64.tar.gz
-          path: ${{github.repository.name}}_aarch64.tar.gz
+          name: ${{github.event.repository.name}}_aarch64.tar.gz
+          path: ${{github.event.repository.name}}_aarch64.tar.gz
 
   create-release:
     permissions: write-all
@@ -107,5 +107,5 @@ jobs:
           tag_name: v${{needs.check-version.outputs.version}}
           body_path: version_changelog.md
           files: |
-            ${{github.repository.name}}_x86_64.tar.gz
-            ${{github.repository.name}}_aarch64.tar.gz
+            ${{github.event.repository.name}}_x86_64.tar.gz
+            ${{github.event.repository.name}}_aarch64.tar.gz
