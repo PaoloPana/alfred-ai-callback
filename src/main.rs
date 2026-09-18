@@ -51,11 +51,11 @@ fn get_message_from_command(command: &str, message: &Message) -> (String, Messag
 }
 
 async fn on_input(message: &Message, module: &AlfredModule) -> Result<(), Box<dyn Error>> {
-    let msg_text = message.text.clone();
-    if msg_text.is_empty() {
+    if message.text.is_empty() {
         warn!("Empty message text");
         return Ok(());
     }
+    let msg_text = message.text.clone();
     let msg_text = clean_json(msg_text)?;
     let ai_message: AIMessageResponse = serde_json::from_str(&msg_text)?;
     if ai_message.request.is_some() {
