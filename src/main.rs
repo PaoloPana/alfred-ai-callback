@@ -85,8 +85,8 @@ async fn on_reply(message: &Message, module: &AlfredModule) -> Result<(), Box<dy
     let ai_response = message.text.clone();
     let user_request = message.params.get("request").ok_or("No user request")?;
     let ai_message = AIMessageRequest {
-        text: user_request.to_string(),
-        other_info: HashMap::from([(ai_request.to_string(), ai_response)]),
+        text: user_request.clone(),
+        other_info: HashMap::from([(ai_request.clone(), ai_response)]),
     };
     let mut response_topics = message.response_topics.clone();
     response_topics.push_front(INPUT_TOPIC.to_string());
